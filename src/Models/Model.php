@@ -1,17 +1,24 @@
 <?php
 namespace App\Models;
-use Database;
 
+use App\Config\Database; 
 use PDO;
 use PDOException;
 use PDOStatement;
+
 abstract class Model {
+    /**
+     * Instance PDO pour l'accès à la base de données.
+     *
+     * @var PDO
+     */
     protected $pdo;
+    
     public function __construct()
     {
         $this->pdo = Database::getInstance();
     }
-
+    
     protected function query($sql, $params = array()): PDOStatement
     {
         try {

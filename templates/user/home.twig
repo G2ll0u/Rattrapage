@@ -1,0 +1,95 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}Accueil - StockFlow{% endblock %}
+
+{% block content %}
+<div class="homepage-container">
+    <!-- En-tête de la page d'accueil -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Bienvenue sur <span class="highlight">StockFlow</span></h1>
+            <p class="hero-subtitle">Votre solution complète de gestion de stock</p>
+        </div>
+    </section>
+    
+    {% if user is defined and user %}
+        <!-- Redirection JavaScript vers dashboard si connecté -->
+        <script>
+            window.location.href = "{{ url('user', 'home') }}";
+        </script>
+    {% else %}
+        <!-- Section de connexion -->
+        <section class="auth-section">
+            <div class="login-card">
+                <h2>Connexion</h2>
+                
+                {% if error is defined %}
+                    <div class="alert alert-danger">{{ error|e }}</div>
+                {% endif %}
+                
+                <form id="login-form" action="{{ url('user', 'login') }}" method="POST">
+                    <div class="form-group">
+                        <label for="email">Email :</label>
+                        <input type="email" id="email" name="email" value="{{ old_input.email|default('') }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Mot de passe :</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Rester connecté</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                    
+                    <div class="password-reset-container">
+                        <a href="{{ url('user', 'resetPassword') }}" class="link">Mot de passe oublié ?</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Section d'information pour les visiteurs -->
+        <section class="features-section">
+            <h2>Optimisez votre gestion de stock</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Suivi en temps réel</h3>
+                    <p>Surveillez vos niveaux de stock et recevez des alertes instantanées.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Gestion des commandes</h3>
+                    <p>Automatisez vos processus de commande et de réapprovisionnement.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Rapports détaillés</h3>
+                    <p>Générez des analyses et des rapports personnalisés sur votre inventaire.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Gestion des fournisseurs</h3>
+                    <p>Organisez et optimisez vos relations avec les fournisseurs.</p>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}

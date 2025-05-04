@@ -1,0 +1,36 @@
+{% extends "layout/base.twig" %}
+{% block title %}Connexion - StockFlow{% endblock %}
+{% block content %}
+    <div class="auth-container">
+        <div class="login-card">
+            <h2>Connexion StockFlow</h2>
+            
+            {% if error is defined %}
+                <div class="alert alert-danger">{{ error|e }}</div>
+            {% endif %}
+            
+            <form id="login-form" action="{{ url('user', 'login') }}" method="POST">
+                <div class="form-group">
+                    <label for="email">Email :</label>
+                    <input type="email" id="email" name="email" value="{{ old_input.email|default('') }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe :</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Rester connecté</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+                
+                <div class="password-reset-container">
+                    <a href="{{ url('user', 'resetPassword') }}" class="link">Mot de passe oublié ?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

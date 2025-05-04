@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mon Site{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ BASE_URL }}public/images/logo.png">
+    <link rel="stylesheet" type="text/css" href="{{ BASE_URL }}static/css/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+    {% include "layout/header.twig" %}
+    {% block content %}{% endblock %}
+    {% include "layout/footer.twig" %}
+
+    {# Script de déconnexion automatique si "Rester connecté" n'est pas activé #}
+    {% if session.remember is not defined or not session.remember %}
+    <script>
+        // Code existant pour la déconnexion automatique
+        // Flag qui empêchera la déconnexion lors d'une navigation interne
+        let preventLogout = false;
+
+        // Lorsqu'un lien interne est cliqué, on désactive le logout
+        document.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                // Utiliser == au lieu de === pour éviter les problèmes de parsing avec Twig
+                if (link.href.indexOf('{{ BASE_URL }}') == 0) {
+                    preventLogout = true;
+                }
+            });
+        });
+
+        // Pour les soumissions de formulaire (ex: recherche, navigation via un formulaire, etc.)
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                preventLogout = true;
+            });
+        });
+
+        window.addEventListener('beforeunload', function() {
+            // Si aucune navigation interne n'est détectée, on envoie la requête de logout
+            if (!preventLogout) {
+                navigator.sendBeacon('{{ url('utilisateur', 'logout') }}');
+            }
+        });
+    </script>
+    {% endif %}
+    
+    {# Scripts généraux #}
+<script src="{{ BASE_URL }}static/js/burger-menu.js"></script>
+    <script src="{{ BASE_URL }}public/js/back-to-top.js"></script>
+</body>
+</html>
+
+
