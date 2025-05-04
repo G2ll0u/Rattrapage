@@ -63,11 +63,11 @@
         <div class="product-detail-footer">
             <div class="action-buttons">
                 {% if isManager %}
-                <a href="{{ url('product', 'manage', {'action': 'edit', 'id': supplier.ID_Product}) }}" class="btn btn-warning">
+                <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Modifier
                 </a>
 
-                <a href="{{ url('product', 'manage', {'action': 'delete', 'id': supplier.ID_Product}) }}" class="btn btn-danger">
+                <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="btn btn-danger">
                     <i class="fas fa-trash"></i> Supprimer
                 </a>
                 {% endif %}

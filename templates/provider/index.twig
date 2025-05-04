@@ -97,8 +97,6 @@
                         <a href="{{ url('supplier', 'manage', {'action': 'edit', 'id': supplier.ID_Provider}) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i> Modifier
                         </a>
-                        {% endif %}
-                        {% if isAdmin %}
                         <a href="{{ url('supplier', 'manage', {'action': 'delete', 'id': supplier.ID_Provider}) }}" class="btn btn-danger btn-sm">
                             <i class="fas fa-trash"></i> Supprimer
                         </a>

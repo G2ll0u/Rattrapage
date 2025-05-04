@@ -260,7 +260,7 @@ class SupplierController extends Controller {
      * @return array [message de succès, erreurs]
      */
     private function handleDelete() {
-        if (!$this->isAdmin()) {
+        if (!$this->isManager()) {
             return ["", ["Vous n'avez pas les droits nécessaires pour supprimer un fournisseur"]];
         }
         
