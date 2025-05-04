@@ -39,7 +39,7 @@ class ProductModel extends Model
             "alert_threshold" => $alert_threshold,
             "ID_Category" => $ID_Category
         ];
-        return $this->create("products", $data);
+        return $this->create("product", $data);
     }
     public function updateProduct(int $id, string $reference, string $name, int $amount, float $price, $last_delivery, int $alert_threshold, int $ID_Category)
     {

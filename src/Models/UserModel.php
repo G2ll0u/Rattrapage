@@ -8,7 +8,7 @@ class UserModel extends Model {
     /**
      * Table correspondante dans la base de données
      */
-    protected $table = 'user';
+    protected $table = 'user_';
     protected $idField = 'ID_User';
     
     /**
@@ -17,7 +17,7 @@ class UserModel extends Model {
     public function getAllUsers() {
         try {
             $sql = "SELECT u.*, r.name AS role_name 
-                    FROM user u 
+                    FROM user_ u 
                     JOIN role r ON u.ID_Role = r.ID_Role 
                     ORDER BY u.name, u.first_name";
             $stmt = $this->query($sql);
@@ -33,7 +33,7 @@ class UserModel extends Model {
     public function getUserById($id) {
         try {
             $sql = "SELECT u.*, r.name AS role_name 
-                    FROM user u 
+                    FROM user_ u 
                     JOIN role r ON u.ID_Role = r.ID_Role 
                     WHERE u.ID_User = ?";
             $stmt = $this->query($sql, [$id]);
@@ -48,11 +48,11 @@ class UserModel extends Model {
      */
     public function getUserByEmail($email) {
         $sql = "SELECT u.*, r.name AS role_name 
-                FROM user u 
+                FROM user_ u 
                 JOIN role r ON u.ID_Role = r.ID_Role 
                 WHERE u.email = ?";
         $stmt = $this->query($sql, [$email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC); // Remplacer PDO::FETCH_OBJ par PDO::FETCH_ASSOC
+        return $stmt->fetch(PDO::FETCH_OBJ); 
     }
     
     /**
@@ -61,7 +61,7 @@ class UserModel extends Model {
     public function searchUsers($term) {
         try {
             $sql = "SELECT u.*, r.name AS role_name 
-                    FROM user u 
+                    FROM user_ u 
                     JOIN role r ON u.ID_Role = r.ID_Role 
                     WHERE u.name LIKE :term 
                     OR u.first_name LIKE :term 
@@ -165,7 +165,7 @@ class UserModel extends Model {
 public function authenticateUser($email, $password) {
     try {
         $sql = "SELECT u.*, r.name AS role_name 
-                FROM user u 
+                FROM user_ u 
                 JOIN role r ON u.ID_Role = r.ID_Role 
                 WHERE u.email = ?";
         $stmt = $this->query($sql, [$email]);

@@ -4,7 +4,7 @@
 namespace App\Controller;
 
 use App\Controller\Controller;
-use App\Model\DashboardModel;
+use App\Models\DashboardModel;
 
 class DashboardController extends Controller {
 

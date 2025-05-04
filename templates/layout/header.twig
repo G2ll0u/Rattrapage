@@ -8,22 +8,22 @@
         </a>
     {% endif %}
     </div>
-    
+
     <div class="header-controls">
-        <div id="user-menu">
-            {% if user %}
-                <div id="user-icon" class="dropdown">
-                    <img src="{{ BASE_URL }}public/images/logo_deco.png" alt="Menu utilisateur" class="user-logo">
-                    <div class="dropdown-menu">
-                        <p>Bienvenue, {{ user.prenom|e }}</p>
-                        <form action="{{ url('utilisateur', 'logout') }}" method="POST">
-                            <button type="submit">Déconnexion</button>
-                        </form>
-                    </div>
+    <div id="user-menu">
+        {% if user %}
+            <div id="user-icon" class="dropdown">
+                <img src="{{ BASE_URL }}static/images/logo_deco.png" alt="Menu utilisateur" class="user-logo">
+                <div class="dropdown-menu">
+                    <p>Bienvenue, {{ user.first_name|default(user.prenom)|e }}</p>
+                    <form action="{{ url('user', 'logout') }}" method="POST">
+                        <button type="submit">Déconnexion</button>
+                    </form>
                 </div>
-            {% endif %}
-        </div>
-        
+            </div>
+        {% endif %}
+    </div>
+</div>
         <button class="burger-menu" aria-label="Menu de navigation" aria-expanded="false">
             <span></span>
             <span></span>
@@ -31,17 +31,16 @@
         </button>
     </div>
 
-    <nav>
-        {% if user %}
-        <a href="{{ url('home', 'index') }}">Accueil</a>
-        <a href="{{ url('offre', 'index') }}">Produits</a>
-        <a href="{{ url('entreprise', 'index') }}">Fournisseurs</a>
-        <a href="{{ url('candidature', 'index') }}">Commandes</a>
-        <a href="{{ url('stock', 'index') }}">Stocks</a>
-        <a href="{{ url('historique', 'index') }}">Historique</a>
-        <a href="{{ url('compte', 'index') }}">Mon compte</a>
-        <a href="{{ url('contact', 'index') }}">Contact</a>
-        <a href="{{ url('dashboard', 'index') }}">Dashboard</a>
-        {% endif %}
-    </nav>
+<nav {% if menuActive %}class="active"{% endif %}>
+{% if user %}
+<a href="{{ url('home', 'index') }}" class="{{ controller == 'home' and action == 'index' ? 'active' : '' }}">Accueil</a>
+<a href="{{ url('home', 'history') }}" class="{{ controller == 'home' and action == 'history' ? 'active' : '' }}">Historique</a>
+<a href="{{ url('product', 'index') }}" class="{{ controller == 'product' ? 'active' : '' }}">Produits</a>
+<a href="{{ url('supplier', 'index') }}" class="{{ controller == 'supplier' ? 'active' : '' }}">Fournisseurs</a>
+<a href="{{ url('orders', 'index') }}" class="{{ controller == 'orders' ? 'active' : '' }}">Commandes</a>
+<a href="{{ url('stock', 'index') }}" class="{{ controller == 'stock' ? 'active' : '' }}">Stocks</a>
+<a href="{{ url('home', 'contact') }}" class="{{ controller == 'home' and action == 'contact' ? 'active' : '' }}">Contact</a>
+<a href="{{ url('compte', 'index') }}" class="{{ controller == 'compte' ? 'active' : '' }}">Moi</a>
+{% endif %}
+</nav>
 </header>

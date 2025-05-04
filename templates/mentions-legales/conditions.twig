@@ -1,0 +1,96 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}Conditions Générales - StockFlow{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ BASE_URL }}public/css/legal.css">
+{% endblock %}
+
+{% block content %}
+<div class="legal-container">
+    <div class="legal-header">
+        <h1>Conditions Générales d'Utilisation</h1>
+        <div class="legal-subtitle">Dernière mise à jour : 4 mai 2025</div>
+    </div>
+    
+    <div class="legal-content">
+        <div class="legal-intro">
+            <p>Merci d'utiliser StockFlow. Les présentes Conditions Générales d'Utilisation (CGU) régissent votre utilisation de notre application de gestion de stock. En utilisant nos services, vous acceptez de vous conformer à ces conditions.</p>
+        </div>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-file-contract"></i> Article 1 : Définitions</h2>
+            <div class="legal-card">
+                <p>Dans les présentes conditions générales d'utilisation, les termes suivants ont la signification indiquée ci-après :</p>
+                <ul>
+                    <li><strong>"StockFlow", "nous", "notre" :</strong> désigne StockFlow SAS</li>
+                    <li><strong>"Service", "Application" :</strong> désigne l'application de gestion de stock StockFlow</li>
+                    <li><strong>"Utilisateur", "vous", "votre" :</strong> désigne toute personne physique ou morale utilisant l'Application</li>
+                    <li><strong>"Compte" :</strong> désigne l'espace personnel de l'Utilisateur sur l'Application</li>
+                    <li><strong>"Contenu" :</strong> désigne toutes les données enregistrées par l'Utilisateur dans l'Application</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-user-plus"></i> Article 2 : Inscription et compte utilisateur</h2>
+            <div class="legal-card">
+                <p>Pour utiliser nos services, vous devez créer un compte utilisateur. Vous vous engagez à fournir des informations exactes et à les maintenir à jour. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités effectuées avec votre compte.</p>
+                <p>StockFlow se réserve le droit de supprimer ou de suspendre votre compte en cas d'informations inexactes, de violation des présentes conditions ou d'inactivité prolongée.</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-shield-alt"></i> Article 3 : Licence d'utilisation</h2>
+            <div class="legal-card">
+                <p>StockFlow vous accorde une licence personnelle, non exclusive, non transférable et révocable pour utiliser l'Application conformément à sa destination et aux présentes conditions.</p>
+                <p>Cette licence ne vous confère aucun droit de propriété sur l'Application ou son contenu. Vous n'êtes pas autorisé à :</p>
+                <ul>
+                    <li>Copier, modifier, adapter ou traduire tout ou partie de l'Application</li>
+                    <li>Décompiler, désassembler ou pratiquer l'ingénierie inverse de l'Application</li>
+                    <li>Louer, sous-licencier ou céder vos droits sur l'Application</li>
+                    <li>Utiliser l'Application à des fins illégales ou non autorisées</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-database"></i> Article 4 : Données utilisateur</h2>
+            <div class="legal-card">
+                <p>Vous conservez la propriété de toutes les données que vous importez, créez ou modifiez dans l'Application. Vous accordez à StockFlow une licence mondiale, non exclusive et gratuite pour héberger, stocker, transférer et afficher vos données dans le seul but de vous fournir le Service.</p>
+                <p>Vous êtes responsable de l'exactitude, de la qualité et de la légalité de vos données et des moyens par lesquels vous les avez obtenues.</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-hand-paper"></i> Article 5 : Limitations de responsabilité</h2>
+            <div class="legal-card">
+                <p>StockFlow s'efforce de fournir un service de la plus haute qualité, mais ne peut garantir que le Service sera disponible sans interruption ou exempt d'erreurs.</p>
+                <p>Dans les limites autorisées par la loi, StockFlow décline toute garantie, expresse ou implicite, concernant l'Application, y compris les garanties d'adéquation à un usage particulier.</p>
+                <p>StockFlow ne saurait être tenu responsable des dommages directs, indirects, accessoires ou consécutifs résultant de l'utilisation ou de l'impossibilité d'utiliser l'Application.</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-file-invoice-dollar"></i> Article 6 : Tarification et paiement</h2>
+            <div class="legal-card">
+                <p>Les conditions tarifaires applicables sont celles en vigueur au moment de la souscription au Service. StockFlow se réserve le droit de modifier ses tarifs à tout moment, sous réserve d'en informer les Utilisateurs avec un préavis raisonnable.</p>
+                <p>Les paiements sont dus selon les modalités définies lors de la souscription. En cas de défaut de paiement, StockFlow se réserve le droit de suspendre ou de résilier votre accès au Service.</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-balance-scale"></i> Article 7 : Droit applicable et juridiction compétente</h2>
+            <div class="legal-card">
+                <p>Les présentes conditions sont régies par le droit français. Tout litige relatif à l'interprétation ou à l'exécution des présentes conditions sera soumis aux tribunaux français compétents.</p>
+            </div>
+        </section>
+    </div>
+    
+    <div class="legal-footer">
+        <a href="{{ url('home', 'index') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}

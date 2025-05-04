@@ -18,6 +18,10 @@ class UserController extends Controller {
     public function __construct() {
         parent::__construct();
         $this->userModel = new UserModel();
+        $this->ProductModel = new ProductModel();
+        //$this->StockModel = new StockModel();
+        $this->OrderModel = new OrdersModel();
+        //$this->SupplierModel = new SupplierModel();
     }
 
         /**
@@ -61,17 +65,17 @@ class UserController extends Controller {
         // Récupérer les statistiques et activités pour le dashboard
         try {
             $statsData = [
-                'products' => $this->ProductModel->getAll(),
-                'alerts' => $this->StockModel->countStockAlerts(),
-                'orders' => $this->OrderModel->countPendingOrders(),
-                'suppliers' => $this->SupplierModel->countActiveSuppliers()
+                'products' => $this->ProductModel->getAllProducts(),
+                //'alerts' => $this->StockModel->countStockAlerts(),
+                //'orders' => $this->OrderModel->countPendingOrders(),
+                //'suppliers' => $this->SupplierModel->countActiveSuppliers()
             ];
             
-            $activities = $this->userModel->getRecentActivities(5);
+           // $activities = $this->userModel->getRecentActivities(5);
             
             $this->render('user/home.twig', [
                 'stats' => $statsData,
-                'activities' => $activities
+          //      'activities' => $activities
             ]);
         } catch (Exception $e) {
             // Même en cas d'erreur, afficher le dashboard avec des stats vides
@@ -118,7 +122,7 @@ class UserController extends Controller {
             'first_name' => $user->first_name,
             'email' => $user->email,
             'password' => $user->password,
-            'ID_Role' => $user->role_name,
+            'role' => $user->role_name,
             'remember' => $remember
         ];
 
@@ -620,6 +624,22 @@ public function logout() {
         }
         
         return $errors;
+    }
+    /**
+     * Vérifie si l'utilisateur est administrateur
+     * @return bool True si l'utilisateur est admin, false sinon
+     */
+    private function isAdmin() {
+        return isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'Admin';
+    }
+
+    /**
+     * Vérifie si l'utilisateur est manager ou administrateur
+     * @return bool True si l'utilisateur est manager ou admin, false sinon
+     */
+    private function isManager() {
+        return isset($_SESSION['user']['role']) && 
+            ($_SESSION['user']['role'] === 'Manager' || $_SESSION['user']['role'] === 'Admin');
     }
 }
 ?>

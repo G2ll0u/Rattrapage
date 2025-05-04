@@ -1,0 +1,157 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="product-container">
+    <div class="product-header">
+        <h1>
+            <i class="fas fa-boxes"></i> Liste des Produits
+            {% if lowStockCount > 0 %}
+                <span class="badge badge-warning">{{ lowStockCount }} produit(s) à faible stock</span>
+            {% endif %}
+        </h1>
+        
+        <div class="product-actions">
+            <a href="{{ url('product', 'manage') }}" class="btn btn-info">
+                <i class="fas fa-cog"></i> Gérer les Produits
+            </a>
+        </div>
+    </div>
+    
+    <div class="search-container">
+    <div class="product-list-header">
+        <h2><i class="fas fa-search"></i> Recherche</h2>
+    </div>
+    
+    <form action="{{ url('product', 'manage') }}" method="GET" class="search-form">
+        {# Garde l'action actuelle lors de la recherche #}
+        <input type="hidden" name="action" value="list">
+        
+        <div class="search-group">
+            <label for="search"><i class="fas fa-search"></i> Recherche par nom</label>
+            <div class="search-field">
+                <input type="text" id="search" name="search" class="form-control" placeholder="Rechercher un produit..." value="{{ search }}">
+            </div>
+        </div>
+        
+        <div class="search-group">
+            <label for="category"><i class="fas fa-tag"></i> Catégorie</label>
+            <div class="search-field">
+                <select name="category" id="category" class="form-select">
+                    <option value="">Toutes catégories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.ID_Category }}" {{ selectedCategory == category.ID_Category ? 'selected' : '' }}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-group">
+            <label for="sort"><i class="fas fa-sort"></i> Trier par</label>
+            <div class="search-field">
+                <select name="sort" id="sort" class="form-select">
+                    <option value="name" {{ sort == 'name' ? 'selected' : '' }}>Nom</option>
+                    <option value="price" {{ sort == 'price' ? 'selected' : '' }}>Prix</option>
+                    <option value="amount" {{ sort == 'amount' ? 'selected' : '' }}>Stock</option>
+                    <option value="last_delivery" {{ sort == 'last_delivery' ? 'selected' : '' }}>Dernière livraison</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-group">
+            <label for="direction"><i class="fas fa-sort-amount-down"></i> Ordre</label>
+            <div class="search-field">
+                <select name="direction" id="direction" class="form-select">
+                    <option value="asc" {{ direction == 'asc' ? 'selected' : '' }}>Ascendant</option>
+                    <option value="desc" {{ direction == 'desc' ? 'selected' : '' }}>Descendant</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-buttons">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+            <a href="{{ url('product', 'manage') }}" class="search-reset">
+                <i class="fas fa-redo"></i> Réinitialiser
+            </a>
+        </div>
+    </form>
+    
+    <div class="category-filter">
+        <a href="{{ url('product', 'manage') }}" class="category-pill {{ selectedCategory == '' ? 'active' : '' }}">
+            Tous
+        </a>
+        {% for category in categories %}
+            <a href="{{ url('product', 'manage', {'category': category.ID_Category}) }}" class="category-pill {{ selectedCategory == category.ID_Category ? 'active' : '' }}">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+    
+    <div class="product-grid">
+        {% if products|length > 0 %}
+            {% for product in products %}
+                <div class="product-card">
+                    <div class="product-stock-status {{ product.amount <= product.alert_threshold ? 'low-stock' : (product.amount > 0 ? 'in-stock' : 'out-of-stock') }}">
+                        {% if product.amount <= product.alert_threshold and product.amount > 0 %}
+                            <i class="fas fa-exclamation-triangle"></i> Stock faible
+                        {% elseif product.amount > 0 %}
+                            <i class="fas fa-check-circle"></i> En stock
+                        {% else %}
+                            <i class="fas fa-times-circle"></i> Rupture de stock
+                        {% endif %}
+                    </div>
+                    <div class="product-header">
+                        <h3>{{ product.name }}</h3>
+                        <span class="product-ref">Réf: {{ product.reference }}</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-detail">
+                            <span class="detail-label">Prix:</span>
+                            <span class="detail-value">{{ product.price|number_format(2, ',', ' ') }} €</span>
+                        </div>
+                        <div class="product-detail">
+                            <span class="detail-label">En stock:</span>
+                            <span class="detail-value">{{ product.amount }}</span>
+                        </div>
+                        <div class="product-detail">
+                            <span class="detail-label">Catégorie:</span>
+                            <span class="detail-value">{{ categoryNames[product.ID_Category] }}</span>
+                        </div>
+                        <div class="product-detail">
+                            <span class="detail-label">Dernière livraison:</span>
+                            <span class="detail-value">{{ product.last_delivery|date("d/m/Y") }}</span>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                    <a href="{{ url('product', 'view', {'id': product.ID_Product}) }}" class="btn btn-info btn-sm">
+                        <i class="fas fa-eye"></i> Voir
+                    </a>
+                    {% if user_.role == 'Manager' or user_.role == 'Admin' %}
+                    <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    {% endif %}
+                    {% if user_.role == 'Admin' %}
+                    <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                    {% endif %}
+                </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>Aucun produit trouvé</h3>
+                <p>Essayez de modifier vos critères de recherche</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

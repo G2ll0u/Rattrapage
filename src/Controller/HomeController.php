@@ -7,11 +7,21 @@ class HomeController extends Controller {
      */
     public function index() {
         if (isset($_SESSION['user'])) {
-            $this->redirect('dashboard', 'index');
+            $this->redirect('user', 'index');
             return;
         }
         $this->render('home/index.twig', [
             'page_title' => 'Accueil - StockFlow'
+        ]);
+    }
+
+    /**
+     * Page À propos 
+     */
+    public function history() {
+        $this->render('home/about.twig', [
+            'page_title' => 'À propos de StockFlow',
+            'current_year' => date('Y')
         ]);
     }
     

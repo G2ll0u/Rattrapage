@@ -1,0 +1,116 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}À propos de StockFlow{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ BASE_URL }}static/css/about.css">
+{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <!-- En-tête de la page -->
+    <div class="about-header">
+        <div class="about-header-content">
+            <h1>Notre Histoire</h1>
+            <p class="tagline">StockFlow, la solution qui révolutionne la gestion de stock depuis 2020</p>
+        </div>
+    </div>
+    
+    <!-- Section Mission -->
+    <section class="about-section mission-section">
+        <div class="section-content">
+            <div class="section-text">
+                <h2>Notre Mission</h2>
+                <p class="mission-statement">Simplifier la gestion de stock pour toutes les entreprises, quelle que soit leur taille.</p>
+                <p>Chez StockFlow, nous croyons qu'une gestion de stock efficace ne devrait pas être réservée aux grandes entreprises disposant de ressources importantes. Notre mission est de démocratiser l'accès à des outils de gestion d'inventaire puissants et intuitifs.</p>
+                <p>Chaque jour, nous travaillons à créer des solutions qui aident les entreprises à optimiser leurs processus, réduire les coûts et améliorer leur efficacité opérationnelle.</p>
+            </div>
+            <div class="section-image">
+                <img src="{{ BASE_URL }}static/images/mission.PNG" alt="Mission de StockFlow">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Nos valeurs -->
+    <section class="about-section values-section">
+        <h2>Nos valeurs</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3>Innovation</h3>
+                <p>Nous repoussons constamment les limites technologiques pour offrir des solutions toujours plus intelligentes et efficaces.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Collaboration</h3>
+                <p>Nous croyons au pouvoir du travail d'équipe et de la collaboration étroite avec nos clients pour créer des produits qui répondent vraiment à leurs besoins.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Fiabilité</h3>
+                <p>La sécurité et la fiabilité de nos services sont nos priorités absolues pour garantir la confiance de nos utilisateurs.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-universal-access"></i>
+                </div>
+                <h3>Accessibilité</h3>
+                <p>Nous concevons des solutions accessibles à tous, sans compromis sur la puissance ou les fonctionnalités.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- L'équipe -->
+    <section class="about-section team-section">
+        <h2>L'équipe derrière StockFlow</h2>
+        <p class="team-intro">Notre succès repose sur une équipe talentueuse et passionnée, dédiée à créer la meilleure expérience possible pour nos clients.</p>
+        
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{{ BASE_URL }}static/images/about/team-1.jpg" alt="Sophie Durand">
+                </div>
+                <h3>Sophie Durand</h3>
+                <p class="member-role">Fondatrice & PDG</p>
+                <p class="member-desc">Ancienne directrice logistique avec 15 ans d'expérience, Sophie a fondé StockFlow pour résoudre les problèmes qu'elle rencontrait au quotidien.</p>
+            </div>
+            
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{{ BASE_URL }}static/images/about/team-2.jpg" alt="Thomas Moreau">
+                </div>
+                <h3>Thomas Moreau</h3>
+                <p class="member-role">Directeur Technique</p>
+                <p class="member-desc">Expert en développement logiciel avec une passion pour les interfaces utilisateur intuitives et les architectures évolutives.</p>
+            </div>
+            
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{{ BASE_URL }}static/images/about/team-3.jpg" alt="Elena Garcia">
+                </div>
+                <h3>Elena Garcia</h3>
+                <p class="member-role">Directrice Produit</p>
+                <p class="member-desc">Elena transforme les idées en fonctionnalités concrètes, en s'assurant que chaque aspect de StockFlow répond aux besoins des utilisateurs.</p>
+            </div>
+            
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{{ BASE_URL }}static/images/about/team-4.jpg" alt="Marc Leroy">
+                </div>
+                <h3>Marc Leroy</h3>
+                <p class="member-role">Responsable Support Client</p>
+                <p class="member-desc">Avec son équipe, Marc s'assure que chaque client reçoit une assistance exceptionnelle et des solutions adaptées à ses besoins.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

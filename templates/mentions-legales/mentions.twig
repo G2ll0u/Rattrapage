@@ -1,0 +1,70 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}Mentions Légales - StockFlow{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ BASE_URL }}public/css/legal.css">
+{% endblock %}
+
+{% block content %}
+<div class="legal-container">
+    <div class="legal-header">
+        <h1>Mentions Légales</h1>
+        <div class="legal-subtitle">Dernière mise à jour : 4 mai 2025</div>
+    </div>
+    
+    <div class="legal-content">
+        <section class="legal-section">
+            <h2><i class="fas fa-building"></i> Informations sur la société</h2>
+            <div class="legal-card">
+                <p><strong>Raison sociale :</strong> StockFlow SAS</p>
+                <p><strong>Forme juridique :</strong> Société par Actions Simplifiée</p>
+                <p><strong>Capital social :</strong> 50 000 €</p>
+                <p><strong>Siège social :</strong> 123 Avenue de la Gestion, 75008 Paris, France</p>
+                <p><strong>SIRET :</strong> 123 456 789 00012</p>
+                <p><strong>RCS :</strong> Paris B 123 456 789</p>
+                <p><strong>N° TVA intracommunautaire :</strong> FR12 123456789</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-user-tie"></i> Représentant légal</h2>
+            <div class="legal-card">
+                <p><strong>Directeur de la publication :</strong> Sophie Durand</p>
+                <p><strong>Fonction :</strong> Présidente</p>
+                <p><strong>Adresse email de contact :</strong> direction@stockflow.com</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-server"></i> Hébergement</h2>
+            <div class="legal-card">
+                <p><strong>Société d'hébergement :</strong> CloudServer Pro</p>
+                <p><strong>Adresse :</strong> 45 Rue de la Tech, 59000 Lille, France</p>
+                <p><strong>Téléphone :</strong> +33 (0)3 20 45 67 89</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-copyright"></i> Propriété intellectuelle</h2>
+            <div class="legal-card">
+                <p>L'ensemble du contenu de ce site web (architecture, textes, logos, images, éléments sonores et graphiques) est la propriété exclusive de StockFlow SAS ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation écrite préalable est strictement interdite et constituerait une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.</p>
+                <p>Les marques et logos figurant sur le site sont des marques déposées. Leur mention n'accorde en aucune manière une licence ou un droit d'utilisation de celles-ci.</p>
+            </div>
+        </section>
+        
+        <section class="legal-section">
+            <h2><i class="fas fa-gavel"></i> Litiges</h2>
+            <div class="legal-card">
+                <p>Les présentes mentions sont régies par la loi française. En cas de litige, les tribunaux français seront seuls compétents.</p>
+            </div>
+        </section>
+    </div>
+    
+    <div class="legal-footer">
+        <a href="{{ url('home', 'index') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}

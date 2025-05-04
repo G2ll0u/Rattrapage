@@ -1,0 +1,88 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="product-container">
+    <div class="back-nav">
+        <a href="{{ url('product', 'index') }}" class="btn btn-light">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+    
+    <div class="product-detail-card">
+        <div class="product-detail-header">
+            <h1>{{ product.name }}</h1>
+            <span class="badge badge-primary">{{ category.name }}</span>
+            
+            <div class="product-stock-indicator {{ product.amount <= product.alert_threshold ? 'low-stock' : (product.amount > 0 ? 'in-stock' : 'out-of-stock') }}">
+                {% if product.amount <= product.alert_threshold and product.amount > 0 %}
+                    <i class="fas fa-exclamation-triangle"></i> Stock faible
+                {% elseif product.amount > 0 %}
+                    <i class="fas fa-check-circle"></i> En stock
+                {% else %}
+                    <i class="fas fa-times-circle"></i> Rupture de stock
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="product-detail-body">
+            <div class="detail-row">
+                <div class="detail-label">Référence</div>
+                <div class="detail-value">{{ product.reference }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Prix unitaire</div>
+                <div class="detail-value price-value">{{ product.price|number_format(2, ',', ' ') }} €</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Quantité en stock</div>
+                <div class="detail-value">{{ product.amount }} unités</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Seuil d'alerte</div>
+                <div class="detail-value">{{ product.alert_threshold }} unités</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Dernière livraison</div>
+                <div class="detail-value">
+                    {% if product.last_delivery %}
+                        {{ product.last_delivery|date("d/m/Y") }}
+                    {% else %}
+                        Aucune livraison enregistrée
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Valeur du stock</div>
+                <div class="detail-value price-value">{{ (product.price * product.amount)|number_format(2, ',', ' ') }} €</div>
+            </div>
+        </div>
+        
+        <div class="product-detail-footer">
+        <div class="action-buttons">
+            {% if user_.role == 'Manager' or user_.role == 'Admin' %}
+            <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            {% endif %}
+            
+            {% if user_.role == 'Admin' %}
+            <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Supprimer
+            </a>
+            {% endif %}
+            
+            <a href="{{ url('product', 'index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

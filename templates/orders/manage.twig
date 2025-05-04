@@ -1,0 +1,438 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="product-management">
+    {# Données de notification pour JavaScript #}
+    <script type="application/json" id="server-notification">
+        {{ notification|json_encode|raw }}
+    </script>
+    
+    <div class="section-header">
+        <h1>
+            <i class="fas fa-boxes"></i> Gestion des produits,
+            {% if lowStockCount > 0 %}
+                <span class="badge badge-warning">{{ lowStockCount }} produit(s) à faible stock</span>
+            {% endif %}
+        </h1>
+        
+        <div class="section-actions">
+            <a href="{{ url('product', 'index') }}" class="btn btn-primary {{ action == 'list' ? 'active' : '' }}">
+                <i class="fas fa-list"></i> Liste des produits
+            </a>
+            <a href="{{ url('product', 'manage', {'action': 'create'}) }}" class="btn btn-success {{ action == 'create' ? 'active' : '' }}">
+                <i class="fas fa-plus"></i> Nouveau produit
+            </a>
+        </div>
+    </div>
+    
+    {% if success %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> {{ success }}
+        </div>
+    {% endif %}
+    
+    {% if errors|length > 0 %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+   {% if action == 'list' %}
+    {# === LISTE DES PRODUITS === #}
+    <div class="search-container">
+        <div class="product-list-header">
+            <h2><i class="fas fa-search"></i> Recherche</h2>
+        </div>
+        
+        <form action="{{ url('product', 'manage') }}" method="GET" class="search-form">
+            {# Garde l'action actuelle lors de la recherche #}
+            <input type="hidden" name="action" value="list">
+            
+            <div class="search-group">
+                <label for="search"><i class="fas fa-search"></i> Recherche par nom</label>
+                <div class="search-field">
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Rechercher un produit..." value="{{ search }}">
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="category"><i class="fas fa-tag"></i> Catégorie</label>
+                <div class="search-field">
+                    <select name="category" id="category" class="form-select">
+                        <option value="">Toutes catégories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.ID_Category }}" {{ selectedCategory == category.ID_Category ? 'selected' : '' }}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="sort"><i class="fas fa-sort"></i> Trier par</label>
+                <div class="search-field">
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="name" {{ sort == 'name' ? 'selected' : '' }}>Nom</option>
+                        <option value="price" {{ sort == 'price' ? 'selected' : '' }}>Prix</option>
+                        <option value="amount" {{ sort == 'amount' ? 'selected' : '' }}>Stock</option>
+                        <option value="last_delivery" {{ sort == 'last_delivery' ? 'selected' : '' }}>Dernière livraison</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="direction"><i class="fas fa-sort-amount-down"></i> Ordre</label>
+                <div class="search-field">
+                    <select name="direction" id="direction" class="form-select">
+                        <option value="asc" {{ direction == 'asc' ? 'selected' : '' }}>Ascendant</option>
+                        <option value="desc" {{ direction == 'desc' ? 'selected' : '' }}>Descendant</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-buttons">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Rechercher
+                </button>
+                <a href="{{ url('product', 'manage') }}" class="search-reset">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+        
+        <div class="category-filter">
+            <a href="{{ url('product', 'manage') }}" class="category-pill {{ selectedCategory == '' ? 'active' : '' }}">
+                Tous
+            </a>
+            {% for category in categories %}
+                <a href="{{ url('product', 'manage', {'category': category.ID_Category}) }}" class="category-pill {{ selectedCategory == category.ID_Category ? 'active' : '' }}">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="product-list-header">
+        <h2><i class="fas fa-boxes"></i> Liste des produits <span class="product-count">{{ products|length }} produit(s)</span></h2>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Dernière livraison</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if products|length > 0 %}
+                    {% for product in products %}
+                        <tr class="{{ product.amount <= product.alert_threshold ? 'low-stock' : (product.amount <= 0 ? 'out-of-stock' : '') }}">
+                            <td>{{ product.reference }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ categoryNames[product.ID_Category] }}</td>
+                            <td>{{ product.price|number_format(2, ',', ' ') }} €</td>
+                            <td>
+                                <div class="stock-indicator">
+                                    <span class="stock-badge {{ product.amount <= product.alert_threshold ? 'warn' : (product.amount <= 0 ? 'danger' : 'success') }}">
+                                        {{ product.amount }}
+                                    </span>
+                                    <span class="stock-value">unités</span>
+                                </div>
+                            </td>
+                            <td>{{ product.last_delivery|date("d/m/Y") }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{{ url('product', 'manage', {'action': 'view', 'id': product.ID_Product}) }}" class="action-btn view" data-tooltip="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if isManager %}
+                                    <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="action-btn edit" data-tooltip="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if isAdmin %}
+                                    <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="action-btn delete" data-tooltip="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">Aucun produit trouvé</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% elseif action == 'create' %}
+        {# === CRÉATION D'UN PRODUIT === #}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-plus-circle"></i> Nouveau produit</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('product', 'manage') }}" method="POST" class="product-form">
+                    <input type="hidden" name="action" value="create">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reference">Référence <span class="required">*</span></label>
+                            <input type="text" id="reference" name="reference" class="form-control" required>
+                            <div class="form-text">Format recommandé: XXX-000</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="name">Nom du produit <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Prix unitaire (€) <span class="required">*</span></label>
+                            <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" value="0.00" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ID_Category">Catégorie <span class="required">*</span></label>
+                            <select id="ID_Category" name="ID_Category" class="form-select" required>
+                                <option value="">Sélectionner une catégorie</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.ID_Category }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Quantité initiale en stock</label>
+                            <input type="number" id="amount" name="amount" class="form-control" min="0" value="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="alert_threshold">Seuil d'alerte</label>
+                            <input type="number" id="alert_threshold" name="alert_threshold" class="form-control" min="0" value="5">
+                            <div class="form-text">Alerte quand le stock est inférieur ou égal à cette valeur</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="last_delivery">Date de dernière livraison</label>
+                            <input type="date" id="last_delivery" name="last_delivery" class="form-control" value="{{ "now"|date('Y-m-d') }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <a href="{{ url('product', 'manage') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% elseif action == 'edit' and currentProduct %}
+        {# === MODIFICATION D'UN PRODUIT === #}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-edit"></i> Modifier le produit</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('product', 'manage') }}" method="POST" class="product-form">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="id" value="{{ currentProduct.ID_Product }}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reference">Référence <span class="required">*</span></label>
+                            <input type="text" id="reference" name="reference" class="form-control" value="{{ currentProduct.reference }}" required>
+                            <div class="form-text">Format recommandé: XXX-000</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="name">Nom du produit <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ currentProduct.name }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Prix unitaire (€) <span class="required">*</span></label>
+                            <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" value="{{ currentProduct.price }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ID_Category">Catégorie <span class="required">*</span></label>
+                            <select id="ID_Category" name="ID_Category" class="form-select" required>
+                                <option value="">Sélectionner une catégorie</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.ID_Category }}" {{ currentProduct.ID_Category == category.ID_Category ? 'selected' : '' }}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Quantité en stock</label>
+                            <input type="number" id="amount" name="amount" class="form-control" min="0" value="{{ currentProduct.amount }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="alert_threshold">Seuil d'alerte</label>
+                            <input type="number" id="alert_threshold" name="alert_threshold" class="form-control" min="0" value="{{ currentProduct.alert_threshold }}">
+                            <div class="form-text">Alerte quand le stock est inférieur ou égal à cette valeur</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="last_delivery">Date de dernière livraison</label>
+                            <input type="date" id="last_delivery" name="last_delivery" class="form-control" value="{{ currentProduct.last_delivery|date('Y-m-d') }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Mettre à jour
+                        </button>
+                        <a href="{{ url('product', 'manage') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% elseif action == 'view' and currentProduct %}
+        {# === CONSULTATION D'UN PRODUIT === #}
+        <div class="card">
+            <div class="card-header product-view-header">
+                <h2>{{ currentProduct.name }}</h2>
+                <span class="product-ref">Référence: {{ currentProduct.reference }}</span>
+                <span class="badge badge-primary">{{ categoryNames[currentProduct.ID_Category] }}</span>
+            </div>
+            
+            <div class="card-body">
+                <div class="product-details">
+                    <div class="product-info-section">
+                        <h3>Informations générales</h3>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">Prix unitaire:</span>
+                                <span class="info-value">{{ currentProduct.price|number_format(2, ',', ' ') }} €</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">Quantité en stock:</span>
+                                <span class="info-value stock-value {{ currentProduct.amount <= currentProduct.alert_threshold ? 'warn' : (currentProduct.amount <= 0 ? 'danger' : 'success') }}">
+                                    {{ currentProduct.amount }} unités
+                                </span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">Seuil d'alerte:</span>
+                                <span class="info-value">{{ currentProduct.alert_threshold }} unités</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">Dernière livraison:</span>
+                                <span class="info-value">{{ currentProduct.last_delivery|date("d/m/Y") }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">Valeur du stock:</span>
+                                <span class="info-value">{{ (currentProduct.price * currentProduct.amount)|number_format(2, ',', ' ') }} €</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-actions-view">
+                    <a href="{{ url('product', 'manage', {'action': 'edit', 'id': currentProduct.ID_Product}) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    
+                    {% if isAdmin %}
+                    <a href="{{ url('product', 'manage', {'action': 'delete', 'id': currentProduct.ID_Product}) }}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url('product', 'manage') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    {% elseif action == 'delete' and currentProduct and isAdmin %}
+        {# === SUPPRESSION D'UN PRODUIT === #}
+        <div class="card">
+            <div class="card-header delete-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmer la suppression</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="delete-confirmation">
+                    <p>Êtes-vous sûr de vouloir supprimer définitivement ce produit ?</p>
+                    
+                    <div class="product-summary">
+                        <h3>{{ currentProduct.name }}</h3>
+                        <p><strong>Référence:</strong> {{ currentProduct.reference }}</p>
+                        <p><strong>Prix:</strong> {{ currentProduct.price|number_format(2, ',', ' ') }} €</p>
+                        <p><strong>Catégorie:</strong> {{ categoryNames[currentProduct.ID_Category] }}</p>
+                        <p><strong>Quantité en stock:</strong> {{ currentProduct.amount }}</p>
+                    </div>
+                    
+                    <div class="warning-message">
+                        <p>Cette action est <strong>irréversible</strong> et supprimera définitivement ce produit de la base de données.</p>
+                    </div>
+                    
+                    <form action="{{ url('product', 'manage') }}" method="POST" class="delete-form">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="{{ currentProduct.ID_Product }}">
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Supprimer définitivement
+                            </button>
+                            <a href="{{ url('product', 'manage') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ BASE_URL }}static/js/product-notifications.js"></script>
+{% endblock %}
