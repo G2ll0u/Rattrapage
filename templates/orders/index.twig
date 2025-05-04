@@ -203,11 +203,11 @@
 </div>
 
 <!-- Modal de confirmation de suppression -->
-<div class="modal" id="deleteModal" tabindex="-1">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Confirmation</h5>
+        <h5 class="modal-title" id="deleteModalLabel">Confirmation</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -225,10 +225,53 @@
 </div>
 
 <script>
-function confirmDelete(orderId) {
-    document.getElementById('order_id').value = orderId;
-    var myModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    myModal.show();
-}
+// S'assurer que le document est chargé
+document.addEventListener('DOMContentLoaded', function() {
+    // Définir la modal en dehors de la fonction pour y avoir accès globalement
+    let deleteModal;
+    
+    // Attendre un court instant pour s'assurer que Bootstrap est chargé
+    setTimeout(function() {
+        // Initialiser la modal une seule fois
+        deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'), {
+            backdrop: 'static', // Empêcher la fermeture en cliquant en dehors
+            keyboard: false // Empêcher la fermeture avec la touche Echap
+        });
+        
+        // Ajouter des gestionnaires d'événements à tous les boutons de suppression
+        const deleteButtons = document.querySelectorAll('.btn-danger[onclick^="confirmDelete"]');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault(); // Empêcher le comportement par défaut du lien
+                const orderId = this.getAttribute('onclick').match(/\d+/)[0];
+                confirmDelete(orderId);
+            });
+            // Supprimer l'attribut onclick pour éviter les doubles appels
+            button.removeAttribute('onclick');
+        });
+    }, 100);
+    
+    // Fonction de confirmation de suppression
+    window.confirmDelete = function(orderId) {
+        // Définir l'ID de la commande dans le formulaire
+        document.getElementById('order_id').value = orderId;
+        
+        // Afficher la modal
+        if (deleteModal) {
+            deleteModal.show();
+        } else {
+            // Fallback si la modal n'est pas initialisée correctement
+            if (typeof bootstrap !== 'undefined') {
+                deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+            } else {
+                alert("Êtes-vous sûr de vouloir supprimer cette commande ?");
+                if (confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) {
+                    document.getElementById('deleteForm').submit();
+                }
+            }
+        }
+    }
+});
 </script>
 {% endblock %}

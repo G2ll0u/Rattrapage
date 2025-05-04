@@ -1,14 +1,17 @@
+
+
 {% extends "layout/base.twig" %}
 
 {% block title %}Accueil - StockFlow{% endblock %}
 
 {% block content %}
-<div class="homepage-container">
+<div class="homepage-container user-role-{{ user.role|lower }}">
     <!-- En-tête de la page d'accueil -->
     <section class="hero-section">
         <div class="hero-content">
             <h1>Bienvenue sur <span class="highlight">StockFlow</span></h1>
             <p class="hero-subtitle">Votre solution complète de gestion de stock</p>
+            <p class="user-greeting">Connecté en tant que <strong>{{ user.first_name }} {{ user.name }}</strong> ({{ user.role }})</p>
         </div>
     </section>
 
@@ -31,8 +34,22 @@
                 </div>
             </div>
             
-            <!-- Carte 2: Gestion des commandes -->
+            <!-- Carte 2: Rapports détaillés -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Rapports détaillés</h3>
+                <p>Consultez les rapports sur votre inventaire et suivez les mouvements de stock.</p>
+                <div class="feature-button-container">
+                    <a href="{{ url('reports', 'index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Explorer
+                    </a>
+                </div>
+            </div>
+            
             {% if user.role in ['Manager', 'Admin'] %}
+            <!-- Carte 3: Gestion des commandes -->
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-tasks"></i>
@@ -45,24 +62,8 @@
                     </a>
                 </div>
             </div>
-            {% endif %}
-            
-            <!-- Carte 3: Rapports détaillés -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <h3>Rapports détaillés</h3>
-                <p>Consultez les rapports  sur votre inventaire.</p>
-                <div class="feature-button-container">
-                    <a href="{{ url('reports', 'index') }}" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> Explorer
-                    </a>
-                </div>
-            </div>
             
             <!-- Carte 4: Gestion des fournisseurs -->
-            {% if user.role in ['Manager', 'Admin'] %}
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-users"></i>

@@ -12,11 +12,13 @@
             {% endif %}
         </h1>
         
+        {% if user.role in ['Manager', 'Admin'] %}
         <div class="product-actions">
             <a href="{{ url('product', 'manage') }}" class="btn btn-info">
                 <i class="fas fa-cog"></i> Gérer les Produits
             </a>
         </div>
+        {% endif %}
     </div>
     
     <div class="search-container">

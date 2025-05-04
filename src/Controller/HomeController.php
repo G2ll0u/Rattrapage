@@ -18,7 +18,7 @@ class HomeController extends Controller {
     /**
      * Page À propos 
      */
-    public function history() {
+    public function about() {
         $this->render('home/about.twig', [
             'page_title' => 'À propos de StockFlow',
             'current_year' => date('Y')
