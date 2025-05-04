@@ -12,43 +12,71 @@
         </div>
     </section>
 
-        <!-- Section d'information pour les visiteurs -->
-        <section class="features-section">
-            <h2>Optimisez votre gestion de stock</h2>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Suivi en temps réel</h3>
-                    <p>Surveillez vos niveaux de stock et recevez des alertes instantanées.</p>
+    <!-- dashboard -->
+    <section class="features-section">
+        <h2>Optimisez votre gestion de stock</h2>
+        
+        <div class="features-grid">
+            <!-- Carte 1: Suivi en temps réel -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3>Gestion des commandes</h3>
-                    <p>Automatisez vos processus de commande et de réapprovisionnement.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <h3>Rapports détaillés</h3>
-                    <p>Générez des analyses et des rapports personnalisés sur votre inventaire.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Gestion des fournisseurs</h3>
-                    <p>Organisez et optimisez vos relations avec les fournisseurs.</p>
+                <h3>Suivi en temps réel</h3>
+                <p>Surveillez vos niveaux de stock et recevez des alertes instantanées.</p>
+                <div class="feature-button-container">
+                    <a href="{{ url('stock', 'index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Accéder aux stocks
+                    </a>
                 </div>
             </div>
-        </section>
+            
+            <!-- Carte 2: Gestion des commandes -->
+            {% if user.role in ['Manager', 'Admin'] %}
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>Gestion des commandes</h3>
+                <p>Automatisez vos processus de commande et de réapprovisionnement.</p>
+                <div class="feature-button-container">
+                    <a href="{{ url('orders', 'index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Voir les commandes
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Carte 3: Rapports détaillés -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Rapports détaillés</h3>
+                <p>Consultez les rapports  sur votre inventaire.</p>
+                <div class="feature-button-container">
+                    <a href="{{ url('reports', 'index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Explorer
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Carte 4: Gestion des fournisseurs -->
+            {% if user.role in ['Manager', 'Admin'] %}
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Gestion des fournisseurs</h3>
+                <p>Organisez et optimisez vos relations avec les fournisseurs.</p>
+                <div class="feature-button-container">
+                    <a href="{{ url('supplier', 'index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Gérer les fournisseurs
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
 </div>
 {% endblock %}

@@ -94,7 +94,7 @@ class DashboardModel extends Model
                     u.first_name || ' ' || u.name AS user_name
                 FROM stock_movement sm
                 JOIN product p ON sm.ID_Product = p.ID_Product
-                JOIN user u ON sm.ID_User = u.ID_User
+                JOIN user_ u ON sm.ID_User = u.ID_User
                 ORDER BY sm.move_date DESC, sm.ID_Move DESC
                 LIMIT 10
             ");

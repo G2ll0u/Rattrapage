@@ -35,12 +35,15 @@
 {% if user %}
 <a href="{{ url('home', 'index') }}" class="{{ controller == 'home' and action == 'index' ? 'active' : '' }}">Accueil</a>
 <a href="{{ url('home', 'history') }}" class="{{ controller == 'home' and action == 'history' ? 'active' : '' }}">Historique</a>
+{% if user.role in ['Admin'] %}
+<a href="{{ url('account', 'index') }}" class="{{ controller == 'account' ? 'active' : '' }}">Comptes</a>
+{% endif %}
 <a href="{{ url('product', 'index') }}" class="{{ controller == 'product' ? 'active' : '' }}">Produits</a>
-<a href="{{ url('supplier', 'index') }}" class="{{ controller == 'supplier' ? 'active' : '' }}">Fournisseurs</a>
-<a href="{{ url('orders', 'index') }}" class="{{ controller == 'orders' ? 'active' : '' }}">Commandes</a>
+{% if user.role in ['Manager', 'Admin'] %}
+    <a href="{{ url('supplier', 'index') }}" class="{{ controller == 'supplier' ? 'active' : '' }}">Fournisseurs</a>
+    <a href="{{ url('orders', 'index') }}" class="{{ controller == 'orders' ? 'active' : '' }}">Commandes</a>
+{% endif %}
 <a href="{{ url('stock', 'index') }}" class="{{ controller == 'stock' ? 'active' : '' }}">Stocks</a>
-<a href="{{ url('home', 'contact') }}" class="{{ controller == 'home' and action == 'contact' ? 'active' : '' }}">Contact</a>
-<a href="{{ url('compte', 'index') }}" class="{{ controller == 'compte' ? 'active' : '' }}">Moi</a>
 {% endif %}
 </nav>
 </header>

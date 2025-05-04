@@ -1,0 +1,58 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}Rapports - StockFlow{% endblock %}
+
+{% block content %}
+<div class="report-dashboard">
+    <div class="page-header">
+        <h1>Tableau de bord des rapports</h1>
+    </div>
+    
+    <div class="report-cards">
+        <div class="report-card">
+            <div class="report-card-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="report-card-content">
+                <h3>Mouvements de stock</h3>
+                <p>Consultez l'historique détaillé des entrées et sorties de stock</p>
+                <div class="report-card-actions">
+                    <a href="{{ url('reports', 'movements') }}" class="btn btn-primary">
+                        <i class="fas fa-chart-bar"></i> Voir le rapport
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-card">
+            <div class="report-card-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="report-card-content">
+                <h3>Prévisions d'achats</h3>
+                <p>Identifiez les produits à commander et optimisez vos approvisionnements</p>
+                <div class="report-card-actions">
+                    <a href="{{ url('reports', 'purchaseForecast') }}" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Voir le rapport
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-card">
+            <div class="report-card-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="report-card-content">
+                <h3>Analyse des tendances</h3>
+                <p>Visualisez l'évolution des mouvements de stock dans le temps</p>
+                <div class="report-card-actions">
+                    <a href="{{ url('reports', 'trends') }}" class="btn btn-primary">
+                        <i class="fas fa-search-plus"></i> Voir le rapport
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

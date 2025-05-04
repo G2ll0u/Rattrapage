@@ -1,0 +1,394 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="user-management">
+    {# Données de notification pour JavaScript #}
+    <script type="application/json" id="server-notification">
+        {{ notification|json_encode|raw }}
+    </script>
+
+    <div class="user-container">
+    <div class="user-header">
+        <h1>
+            <i class="fas fa-users"></i> Gestion des utilisateurs
+        </h1>
+        
+        <div class="user-actions">
+        <a href="{{ url('account', 'index') }}" class="btn btn-primary {{ action == 'list' ? 'active' : '' }}">
+    <i class="fas fa-list"></i> Liste des utilisateurs
+</a>
+{% if isAdmin %}
+<a href="{{ url('account', 'manage', {'action': 'create'}) }}" class="btn btn-success {{ action == 'create' ? 'active' : '' }}">
+    <i class="fas fa-plus"></i> Nouvel utilisateur
+</a>
+{% endif %}
+        </div>
+    </div>
+    
+    {% if success %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> {{ success }}
+        </div>
+    {% endif %}
+    
+    {% if errors|length > 0 %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+   {% if action == 'list' %}
+    {# === LISTE DES UTILISATEURS === #}
+    <div class="search-container">
+        <div class="user-list-header">
+            <h2><i class="fas fa-search"></i> Recherche</h2>
+        </div>
+        
+        <form action="{{ url('account', 'manage') }}" method="GET" class="search-form">
+            {# Garde l'action actuelle lors de la recherche #}
+            <input type="hidden" name="action" value="list">
+            
+            <div class="search-group">
+                <label for="search"><i class="fas fa-search"></i> Recherche</label>
+                <div class="search-field">
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Rechercher un utilisateur..." value="{{ search }}">
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="role"><i class="fas fa-user-tag"></i> Rôle</label>
+                <div class="search-field">
+                    <select name="role" id="role" class="form-select">
+                        <option value="">Tous les rôles</option>
+                        {% for role in roles %}
+                            <option value="{{ role.ID_Role }}" {{ selectedRole == role.ID_Role ? 'selected' : '' }}>
+                                {{ role.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="sort"><i class="fas fa-sort"></i> Trier par</label>
+                <div class="search-field">
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="name" {{ sort == 'name' ? 'selected' : '' }}>Nom</option>
+                        <option value="first_name" {{ sort == 'first_name' ? 'selected' : '' }}>Prénom</option>
+                        <option value="email" {{ sort == 'email' ? 'selected' : '' }}>Email</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="direction"><i class="fas fa-sort-amount-down"></i> Ordre</label>
+                <div class="search-field">
+                    <select name="direction" id="direction" class="form-select">
+                        <option value="asc" {{ direction == 'asc' ? 'selected' : '' }}>Ascendant</option>
+                        <option value="desc" {{ direction == 'desc' ? 'selected' : '' }}>Descendant</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-buttons">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Rechercher
+                </button>
+                <a href="{{ url('account', 'manage') }}" class="search-reset">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+        
+        <div class="role-filter">
+            <a href="{{ url('account', 'manage') }}" class="role-pill {{ selectedRole == '' ? 'active' : '' }}">
+                Tous
+            </a>
+            {% for role in roles %}
+                <a href="{{ url('account', 'manage', {'role': role.ID_Role}) }}" class="role-pill {{ selectedRole == role.ID_Role ? 'active' : '' }}">
+                    {{ role.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="user-list-header">
+        <h2><i class="fas fa-users"></i> Liste des utilisateurs <span class="user-count">{{ users|length }} utilisateur(s)</span></h2>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users|length > 0 %}
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.ID_User }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.first_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge role-badge {{ roleNames[user.ID_Role]|lower }}">
+                                    {{ roleNames[user.ID_Role] }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{{ url('account', 'view', {'id': user.ID_User}) }}" class="action-btn view">
+                                        <i class="fas fa-eye"></i><span>Voir</span>
+                                    </a>
+                                    {% if isAdmin %}
+                                    <a href="{{ url('account', 'manage', {'action': 'edit', 'id': user.ID_User}) }}" class="action-btn edit">
+                                        <i class="fas fa-edit"></i><span>Modifier</span>
+                                    </a>
+                                    {% endif %}
+                                    {% if isAdmin and user.ID_User != session.user.ID_User %}
+                                    <a href="{{ url('account', 'manage', {'action': 'delete', 'id': user.ID_User}) }}" class="action-btn delete">
+                                        <i class="fas fa-trash"></i><span>Supprimer</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Aucun utilisateur trouvé</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% elseif action == 'create' %}
+        {# === CRÉATION D'UN UTILISATEUR === #}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-plus-circle"></i> Nouvel utilisateur</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('account', 'manage') }}" method="POST" class="user-form">
+                    <input type="hidden" name="action" value="create">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name">Prénom <span class="required">*</span></label>
+                            <input type="text" id="first_name" name="first_name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="name">Nom <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ID_Role">Rôle <span class="required">*</span></label>
+                            <select id="ID_Role" name="ID_Role" class="form-select" required>
+                                <option value="">Sélectionner un rôle</option>
+                                {% for role in roles %}
+                                    <option value="{{ role.ID_Role }}">{{ role.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Mot de passe <span class="required">*</span></label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                            <div class="form-text">Minimum 8 caractères</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <a href="{{ url('account', 'manage') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% elseif action == 'edit' and currentUser %}
+        {# === MODIFICATION D'UN UTILISATEUR === #}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-edit"></i> Modifier l'utilisateur</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('account', 'manage') }}" method="POST" class="user-form">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="id" value="{{ currentUser.ID_User }}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name">Prénom <span class="required">*</span></label>
+                            <input type="text" id="first_name" name="first_name" class="form-control" value="{{ currentUser.first_name }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="name">Nom <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ currentUser.name }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" value="{{ currentUser.email }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ID_Role">Rôle <span class="required">*</span></label>
+                            <select id="ID_Role" name="ID_Role" class="form-select" required>
+                                <option value="">Sélectionner un rôle</option>
+                                {% for role in roles %}
+                                    <option value="{{ role.ID_Role }}" {{ currentUser.ID_Role == role.ID_Role ? 'selected' : '' }}>
+                                        {{ role.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                            <div class="form-text">Laissez vide pour conserver le mot de passe actuel</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Mettre à jour
+                        </button>
+                        <a href="{{ url('account', 'manage') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% elseif action == 'view' and currentUser %}
+        {# === CONSULTATION D'UN UTILISATEUR === #}
+        <div class="card">
+            <div class="card-header user-view-header">
+                <h2>{{ currentUser.first_name }} {{ currentUser.name }}</h2>
+                <span class="user-id">ID: {{ currentUser.ID_User }}</span>
+                <span class="badge role-badge">{{ roleNames[currentUser.ID_Role] }}</span>
+            </div>
+            
+            <div class="card-body">
+                <div class="user-details">
+                    <div class="user-info-section">
+                        <h3>Informations générales</h3>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value">{{ currentUser.email }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">Rôle:</span>
+                                <span class="info-value">{{ roleNames[currentUser.ID_Role] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="user-actions-view">
+                    <a href="{{ url('account', 'manage', {'action': 'edit', 'id': currentUser.ID_User}) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    
+                    {% if isAdmin and currentUser.ID_User != session.user.ID_User %}
+                    <a href="{{ url('account', 'manage', {'action': 'delete', 'id': currentUser.ID_User}) }}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url('account', 'manage') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    {% elseif action == 'delete' and currentUser and isAdmin %}
+        {# === SUPPRESSION D'UN UTILISATEUR === #}
+        <div class="card">
+            <div class="card-header delete-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmer la suppression</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="delete-confirmation">
+                    <p>Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?</p>
+                    
+                    <div class="user-summary">
+                        <h3>{{ currentUser.first_name }} {{ currentUser.name }}</h3>
+                        <p><strong>Email:</strong> {{ currentUser.email }}</p>
+                        <p><strong>Rôle:</strong> {{ roleNames[currentUser.ID_Role] }}</p>
+                        <p><strong>ID:</strong> {{ currentUser.ID_User }}</p>
+                    </div>
+                    
+                    <div class="warning-message">
+                        <p>Cette action est <strong>irréversible</strong> et supprimera définitivement cet utilisateur de la base de données.</p>
+                    </div>
+                    
+                    {% if currentUser.ID_User == session.user.ID_User %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> Vous ne pouvez pas supprimer votre propre compte.
+                        </div>
+                    {% else %}
+                        <form action="{{ url('account', 'manage') }}" method="POST" class="delete-form">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="{{ currentUser.ID_User }}">
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer définitivement
+                                </button>
+                                <a href="{{ url('account', 'manage') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ BASE_URL }}static/js/account-notifications.js"></script>
+{% endblock %}

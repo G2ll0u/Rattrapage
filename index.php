@@ -7,7 +7,7 @@
 
 // Define BASE_URL constant if not already defined
 if (!defined('BASE_URL')) {
-    define('BASE_URL', '/Rattrapage/');
+    define('BASE_URL', '/StockFlow/');
 }
 
 // Initialize session if not already started

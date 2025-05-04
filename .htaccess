@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /Rattrapage/
+    RewriteBase /StockFlow/
     
     # Si le fichier ou dossier demandé n'existe pas
     RewriteCond %{REQUEST_FILENAME} !-f

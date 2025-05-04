@@ -4,7 +4,7 @@
 // Définissez BASE_URL si ce n'est pas déjà fait
 if (!defined('BASE_URL')) {
     // Ajustez ceci selon votre configuration
-    define('BASE_URL', '/Rattrapage/'); 
+    define('BASE_URL', '/StockFlow/'); 
 }
 
 // Initialiser Twig

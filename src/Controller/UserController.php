@@ -537,44 +537,22 @@ public function logout() {
         $this->render('user/reset-password.twig');
     }
     
-    /**
-     * Traitement de la demande de réinitialisation de mot de passe
-     */
-    public function requestPasswordReset() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('user', 'resetPassword');
-            return;
-        }
-        
-        $email = $_POST['email'] ?? '';
-        
-        if (empty($email)) {
-            $this->render('user/reset-password.twig', [
-                'error' => 'Veuillez fournir une adresse email.'
-            ]);
-            return;
-        }
-        
-        try {
-            $user = $this->userModel->getUserByEmail($email);
-            
-            if (!$user) {
-                // Ne pas indiquer si l'email existe pour des raisons de sécurité
-                $this->render('user/reset-password-sent.twig');
-                return;
-            }
-            
-            // Dans une application réelle, générer un token et envoyer un email
-            // Pour l'exemple, nous affichons simplement une page de confirmation
-            
-            $this->render('user/reset-password-sent.twig');
-        } catch (Exception $e) {
-            $this->render('user/reset-password.twig', [
-                'error' => 'Une erreur est survenue: ' . $e->getMessage(),
-                'email' => $email
-            ]);
-        }
+  /**
+ * Traitement de la demande de réinitialisation de mot de passe
+ * Version simplifiée qui renvoie directement à la page de contact administrateur
+ */
+public function requestPasswordReset() {
+    // Si l'utilisateur est déjà connecté, le rediriger vers le dashboard
+    if (isset($_SESSION['user'])) {
+        $this->redirect('user', 'index');
+        return;
     }
+    
+    // Affiche simplement la page avec le lien de contact
+    $this->render('user/reset-password.twig', [
+        'currentTime' => date('Y-m-d H:i:s')
+    ]);
+}
     
     /**
      * Validation des données utilisateur

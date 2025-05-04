@@ -1,0 +1,79 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="user-container">
+    
+    <div class="user-detail-card">
+        <div class="user-detail-header">
+            <h1>{{ user_.first_name }} {{ user_.name }}</h1>
+            <span class="badge role-badge {{ role.name|lower }}">{{ role.name }}</span>
+            
+            <div class="user-id-display">
+                <i class="fas fa-id-card"></i> ID: {{ user_.ID_User }}
+            </div>
+        </div>
+        
+        <div class="user-detail-body">
+            <div class="detail-row">
+                <div class="detail-label">Email</div>
+                <div class="detail-value">{{ user_.email }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Prénom</div>
+                <div class="detail-value">{{ user_.first_name }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Nom</div>
+                <div class="detail-value">{{ user_.name }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Rôle</div>
+                <div class="detail-value">{{ role.name }}</div>
+            </div>
+            
+            {% if user_.created_at %}
+            <div class="detail-row">
+                <div class="detail-label">Date de création</div>
+                <div class="detail-value">
+                    {{ user_.created_at|date("d/m/Y H:i") }}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if user_.last_login %}
+            <div class="detail-row">
+                <div class="detail-label">Dernière connexion</div>
+                <div class="detail-value">
+                    {{ user_.last_login|date("d/m/Y H:i") }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="user-detail-footer">
+            <div class="action-buttons">
+                {% if isAdmin %}
+                <a href="{{ url('account', 'manage', {'action': 'edit', 'id': user.ID_User}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+
+                {% if user_.ID_User != session.user.ID_User %}
+                <a href="{{ url('account', 'manage', {'action': 'delete', 'id': user.ID_User}) }}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Supprimer
+                </a>
+                {% endif %}
+                {% endif %}
+                
+                <a href="{{ url('account', 'index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

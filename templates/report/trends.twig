@@ -1,0 +1,96 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}Analyse des tendances - StockFlow{% endblock %}
+
+{% block headExtras %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="trends-report">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <h1>Analyse des tendances</h1>
+        <div class="report-info d-flex align-items-center" style="align-self: flex-start;">
+            <span class="product-count">{{ current_date|date('d/m/Y H:i') }}</span>
+            <span class="product-count">{{ user.first_name }} {{ user.name }}</span>
+        </div>
+        <a href="{{ url('reports', 'index') }}" class="btn btn-secondary">
+        ⬅️​ Retour
+        </a>
+    </div>
+    
+    <!-- Filtres -->
+    <div class="filters-card mb-4">
+        <form method="GET" action="{{ url('reports', 'trends') }}" class="filters-form">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="months">Période d'analyse</label>
+                        <select id="months" name="months" class="form-control" onchange="this.form.submit()">
+                            <option value="3" {{ monthsBack == 3 ? 'selected' : '' }}>3 mois</option>
+                            <option value="6" {{ monthsBack == 6 ? 'selected' : '' }}>6 mois</option>
+                            <option value="12" {{ monthsBack == 12 ? 'selected' : '' }}>12 mois</option>
+                            <option value="24" {{ monthsBack == 24 ? 'selected' : '' }}>24 mois</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Top produits en mouvement -->
+    <div class="data-card">
+                <h3>Top 5 produits les plus sortis</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Catégorie</th>
+                            <th class="text-end">Sorties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedByOut = productStats|sort((a, b) => b.total_out <=> a.total_out)|slice(0, 5) %}
+                        {% for product in sortedByOut %}
+                            <tr>
+                                <td>{{ product.product_name }}</td>
+                                <td>{{ product.category_name }}</td>
+                                <td class="text-end fw-bold">{{ product.total_out }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">Aucune donnée disponible</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="data-card">
+                <h3>Top 5 produits les plus entrés</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Catégorie</th>
+                            <th class="text-end">Entrées</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedByIn = productStats|sort((a, b) => b.total_in <=> a.total_in)|slice(0, 5) %}
+                        {% for product in sortedByIn %}
+                            <tr>
+                                <td>{{ product.product_name }}</td>
+                                <td>{{ product.category_name }}</td>
+                                <td class="text-end fw-bold">{{ product.total_in }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">Aucune donnée disponible</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+    </div>
+{% endblock %}

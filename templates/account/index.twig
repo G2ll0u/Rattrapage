@@ -1,0 +1,138 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="user-container">
+    <div class="user-header">
+        <h1>
+            <i class="fas fa-users"></i> Liste des Utilisateurs
+        </h1>
+        
+        <div class="user-actions">
+            <a href="{{ url('account', 'manage') }}" class="btn btn-info">
+                <i class="fas fa-cog"></i> Gérer les Utilisateurs
+            </a>
+        </div>
+    </div>
+    
+    <div class="search-container">
+    <div class="user-list-header">
+        <h2><i class="fas fa-search"></i> Recherche</h2>
+    </div>
+    
+    <form action="{{ url('account', 'manage') }}" method="GET" class="search-form">
+        {# Garde l'action actuelle lors de la recherche #}
+        <input type="hidden" name="action" value="list">
+        
+        <div class="search-group">
+            <label for="search"><i class="fas fa-search"></i> Recherche</label>
+            <div class="search-field">
+                <input type="text" id="search" name="search" class="form-control" placeholder="Rechercher un utilisateur..." value="{{ search }}">
+            </div>
+        </div>
+        
+        <div class="search-group">
+            <label for="role"><i class="fas fa-user-tag"></i> Rôle</label>
+            <div class="search-field">
+                <select name="role" id="role" class="form-select">
+                    <option value="">Tous les rôles</option>
+                    {% for role in roles %}
+                        <option value="{{ role.ID_Role }}" {{ selectedRole == role.ID_Role ? 'selected' : '' }}>
+                            {{ role.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-group">
+            <label for="sort"><i class="fas fa-sort"></i> Trier par</label>
+            <div class="search-field">
+                <select name="sort" id="sort" class="form-select">
+                    <option value="name" {{ sort == 'name' ? 'selected' : '' }}>Nom</option>
+                    <option value="first_name" {{ sort == 'first_name' ? 'selected' : '' }}>Prénom</option>
+                    <option value="email" {{ sort == 'email' ? 'selected' : '' }}>Email</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-group">
+            <label for="direction"><i class="fas fa-sort-amount-down"></i> Ordre</label>
+            <div class="search-field">
+                <select name="direction" id="direction" class="form-select">
+                    <option value="asc" {{ direction == 'asc' ? 'selected' : '' }}>Ascendant</option>
+                    <option value="desc" {{ direction == 'desc' ? 'selected' : '' }}>Descendant</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-buttons">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+            <a href="{{ url('account', 'manage') }}" class="search-reset">
+                <i class="fas fa-redo"></i> Réinitialiser
+            </a>
+        </div>
+    </form>
+    
+    <div class="role-filter">
+        <a href="{{ url('account', 'manage') }}" class="role-pill {{ selectedRole == '' ? 'active' : '' }}">
+            Tous
+        </a>
+        {% for role in roles %}
+            <a href="{{ url('account', 'manage', {'role': role.ID_Role}) }}" class="role-pill {{ selectedRole == role.ID_Role ? 'active' : '' }}">
+                {{ role.name }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+    
+    <div class="user-grid">
+        {% if users|length > 0 %}
+            {% for user in users %}
+                <div class="user-card">
+                    <div class="user-header">
+                        <h3>{{ user.first_name }} {{ user.name }}</h3>
+                        <span class="user-role {{ user.role_name|lower }}">{{ user.role_name }}</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-detail">
+                            <span class="detail-label"><i class="fas fa-envelope"></i> Email:</span>
+                            <span class="detail-value">{{ user.email }}</span>
+                        </div>
+                        <div class="user-detail">
+                            <span class="detail-label"><i class="fas fa-id-card"></i> ID:</span>
+                            <span class="detail-value">{{ user.ID_User }}</span>
+                        </div>
+                        <div class="user-detail">
+                            <span class="detail-label"><i class="fas fa-user-tag"></i> Rôle:</span>
+                            <span class="detail-value">{{ roleNames[user.ID_Role] }}</span>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <a href="{{ url('account', 'view', {'id': user.ID_User}) }}" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                        {% if user_.role == 'Admin' %}
+                        <a href="{{ url('account', 'manage', {'action': 'edit', 'id': user.ID_User}) }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <a href="{{ url('account', 'manage', {'action': 'delete', 'id': user.ID_User}) }}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>Aucun utilisateur trouvé</h3>
+                <p>Essayez de modifier vos critères de recherche</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
