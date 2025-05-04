@@ -10,7 +10,7 @@ class OrderLineModel extends Model
     
     public function getOrderLinesByOrder($orderId)
     {
-        $sql = "SELECT ol.*, p.name as product_name 
+        $sql = "SELECT ol.*, p.name as p.reference 
                 FROM order_line ol
                 JOIN product p ON ol.ID_Product = p.ID_Product
                 WHERE ol.ID_Orders = ?";
@@ -28,7 +28,7 @@ class OrderLineModel extends Model
     public function getFilteredOrderLines($search)
     {
         $search = "%$search%";
-        $sql = "SELECT ol.*, p.name as product_name 
+        $sql = "SELECT ol.*, p.name as p.reference 
                 FROM order_line ol
                 JOIN product p ON ol.ID_Product = p.ID_Product
                 WHERE p.name LIKE :search OR p.reference LIKE :search";

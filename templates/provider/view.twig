@@ -1,0 +1,61 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="provider-container">
+
+    
+    <div class="provider-detail-card">
+        <div class="provider-detail-header">
+            <h1>{{ supplier.name }}</h1>
+            <span class="badge badge-primary"><i class="fas fa-building"></i> Fournisseur</span>
+        </div>
+        
+        <div class="provider-detail-body">
+            <div class="detail-row">
+                <div class="detail-label"><i class="fas fa-envelope"></i> Email</div>
+                <div class="detail-value">{{ supplier.email }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label"><i class="fas fa-phone"></i> Téléphone</div>
+                <div class="detail-value">{{ supplier.phone }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label"><i class="fas fa-map-marker-alt"></i> Adresse</div>
+                <div class="detail-value">{{ supplier.address }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label"><i class="fas fa-user"></i> Contact</div>
+                <div class="detail-value">{{ supplier.contact_name }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label"><i class="fas fa-id-card"></i> ID Fournisseur</div>
+                <div class="detail-value">{{ supplier.ID_Provider }}</div>
+            </div>
+        </div>
+        
+        <div class="provider-detail-footer">
+            <div class="action-buttons">
+                {% if isManager %}
+                <a href="{{ url('supplier', 'manage', {'action': 'edit', 'id': supplier.ID_Provider}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+
+                <a href="{{ url('supplier', 'manage', {'action': 'delete', 'id': supplier.ID_Provider}) }}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Supprimer
+                </a>
+                {% endif %}
+                
+                <a href="{{ url('supplier', 'index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,11 +4,7 @@
 
 {% block content %}
 <div class="product-container">
-    <div class="back-nav">
-        <a href="{{ url('product', 'index') }}" class="btn btn-light">
-            <i class="fas fa-arrow-left"></i> Retour à la liste
-        </a>
-    </div>
+
     
     <div class="product-detail-card">
         <div class="product-detail-header">
@@ -65,23 +61,21 @@
         </div>
         
         <div class="product-detail-footer">
-        <div class="action-buttons">
-            {% if user_.role == 'Manager' or user_.role == 'Admin' %}
-            <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="btn btn-warning">
-                <i class="fas fa-edit"></i> Modifier
-            </a>
-            {% endif %}
-            
-            {% if user_.role == 'Admin' %}
-            <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="btn btn-danger">
-                <i class="fas fa-trash"></i> Supprimer
-            </a>
-            {% endif %}
-            
-            <a href="{{ url('product', 'index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour à la liste
-            </a>
-        </div>
+            <div class="action-buttons">
+                {% if isManager %}
+                <a href="{{ url('product', 'manage', {'action': 'edit', 'id': supplier.ID_Product}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+
+                <a href="{{ url('product', 'manage', {'action': 'delete', 'id': supplier.ID_Product}) }}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Supprimer
+                </a>
+                {% endif %}
+                
+                <a href="{{ url('product', 'index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
     </div>
     </div>
 </div>

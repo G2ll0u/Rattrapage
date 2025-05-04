@@ -1,0 +1,354 @@
+{% extends "layout/base.twig" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="provider-management">
+    {# Données de notification pour JavaScript #}
+    <script type="application/json" id="server-notification">
+        {{ notification|json_encode|raw }}
+    </script>
+
+    <div class="provider-container">
+    <div class="provider-header">
+        <h1>
+            <i class="fas fa-building"></i> Gestion des fournisseurs
+        </h1>
+        
+        <div class="provider-actions">
+        <a href="{{ url('supplier', 'index') }}" class="btn btn-primary {{ action == 'list' ? 'active' : '' }}">
+            <i class="fas fa-list"></i> Liste des fournisseurs
+        </a>
+        {% if isManager %}
+        <a href="{{ url('supplier', 'manage', {'action': 'create'}) }}" class="btn btn-success {{ action == 'create' ? 'active' : '' }}">
+            <i class="fas fa-plus"></i> Nouveau fournisseur
+        </a>
+        {% endif %}
+        </div>
+    </div>
+    
+    {% if success %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> {{ success }}
+        </div>
+    {% endif %}
+    
+    {% if errors|length > 0 %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+   {% if action == 'list' %}
+    {# === LISTE DES FOURNISSEURS === #}
+    <div class="search-container">
+        <div class="provider-list-header">
+            <h2><i class="fas fa-search"></i> Recherche</h2>
+        </div>
+        
+        <form action="{{ url('supplier', 'manage') }}" method="GET" class="search-form">
+            {# Garde l'action actuelle lors de la recherche #}
+            <input type="hidden" name="action" value="list">
+            
+            <div class="search-group">
+                <label for="search"><i class="fas fa-search"></i> Recherche</label>
+                <div class="search-field">
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Rechercher un fournisseur..." value="{{ search }}">
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="sort"><i class="fas fa-sort"></i> Trier par</label>
+                <div class="search-field">
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="name" {{ sort == 'name' ? 'selected' : '' }}>Nom</option>
+                        <option value="email" {{ sort == 'email' ? 'selected' : '' }}>Email</option>
+                        <option value="contact_name" {{ sort == 'contact_name' ? 'selected' : '' }}>Contact</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-group">
+                <label for="direction"><i class="fas fa-sort-amount-down"></i> Ordre</label>
+                <div class="search-field">
+                    <select name="direction" id="direction" class="form-select">
+                        <option value="asc" {{ direction == 'asc' ? 'selected' : '' }}>Ascendant</option>
+                        <option value="desc" {{ direction == 'desc' ? 'selected' : '' }}>Descendant</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-buttons">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Rechercher
+                </button>
+                <a href="{{ url('supplier', 'manage') }}" class="search-reset">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="provider-list-header">
+        <h2><i class="fas fa-building"></i> Liste des fournisseurs <span class="provider-count">{{ suppliers|length }} fournisseur(s)</span></h2>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="provider-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if suppliers|length > 0 %}
+                    {% for supplier in suppliers %}
+                        <tr>
+                            <td>{{ supplier.name }}</td>
+                            <td>{{ supplier.contact_name }}</td>
+                            <td>{{ supplier.email }}</td>
+                            <td>{{ supplier.phone }}</td>
+                            <td>{{ supplier.address }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{{ url('supplier', 'view', {'id': supplier.ID_Provider}) }}" class="action-btn view">
+                                        <i class="fas fa-eye"></i><span>Voir</span>
+                                    </a>
+                                    {% if isManager %}
+                                    <a href="{{ url('supplier', 'manage', {'action': 'edit', 'id': supplier.ID_Provider}) }}" class="action-btn edit">
+                                        <i class="fas fa-edit"></i><span>Modifier</span>
+                                    </a>
+                                    {% endif %}
+                                    {% if isAdmin %}
+                                    <a href="{{ url('supplier', 'manage', {'action': 'delete', 'id': supplier.ID_Provider}) }}" class="action-btn delete">
+                                        <i class="fas fa-trash"></i><span>Supprimer</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Aucun fournisseur trouvé</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% elseif action == 'create' %}
+        {# === CRÉATION D'UN FOURNISSEUR === #}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-plus-circle"></i> Nouveau fournisseur</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('supplier', 'manage') }}" method="POST" class="provider-form">
+                    <input type="hidden" name="action" value="create">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nom du fournisseur <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Téléphone</label>
+                            <input type="tel" id="phone" name="phone" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_name">Nom du contact</label>
+                            <input type="text" id="contact_name" name="contact_name" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="address">Adresse</label>
+                            <input type="text" id="address" name="address" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <a href="{{ url('supplier', 'manage') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% elseif action == 'edit' and currentSupplier %}
+        {# === MODIFICATION D'UN FOURNISSEUR === #}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-edit"></i> Modifier le fournisseur</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('supplier', 'manage') }}" method="POST" class="provider-form">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="id" value="{{ currentSupplier.ID_Provider }}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nom du fournisseur <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ currentSupplier.name }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" value="{{ currentSupplier.email }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Téléphone</label>
+                            <input type="tel" id="phone" name="phone" class="form-control" value="{{ currentSupplier.phone }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_name">Nom du contact</label>
+                            <input type="text" id="contact_name" name="contact_name" class="form-control" value="{{ currentSupplier.contact_name }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="address">Adresse</label>
+                            <input type="text" id="address" name="address" class="form-control" value="{{ currentSupplier.address }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Mettre à jour
+                        </button>
+                        <a href="{{ url('supplier', 'manage') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% elseif action == 'view' and currentSupplier %}
+        {# === CONSULTATION D'UN FOURNISSEUR === #}
+        <div class="card">
+            <div class="card-header provider-view-header">
+                <h2>{{ currentSupplier.name }}</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="provider-details">
+                    <div class="provider-info-section">
+                        <h3>Informations du fournisseur</h3>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-envelope"></i> Email:</span>
+                                <span class="info-value">{{ currentSupplier.email }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-phone"></i> Téléphone:</span>
+                                <span class="info-value">{{ currentSupplier.phone }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-map-marker-alt"></i> Adresse:</span>
+                                <span class="info-value">{{ currentSupplier.address }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-user"></i> Contact:</span>
+                                <span class="info-value">{{ currentSupplier.contact_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="provider-actions-view">
+                    <a href="{{ url('supplier', 'manage', {'action': 'edit', 'id': currentSupplier.ID_Provider}) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    
+                    {% if isAdmin %}
+                    <a href="{{ url('supplier', 'manage', {'action': 'delete', 'id': currentSupplier.ID_Provider}) }}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url('supplier', 'manage') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    {% elseif action == 'delete' and currentSupplier and isAdmin %}
+        {# === SUPPRESSION D'UN FOURNISSEUR === #}
+        <div class="card">
+            <div class="card-header delete-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmer la suppression</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="delete-confirmation">
+                    <p>Êtes-vous sûr de vouloir supprimer définitivement ce fournisseur ?</p>
+                    
+                    <div class="provider-summary">
+                        <h3>{{ currentSupplier.name }}</h3>
+                        <p><strong>Email:</strong> {{ currentSupplier.email }}</p>
+                        <p><strong>Téléphone:</strong> {{ currentSupplier.phone }}</p>
+                        <p><strong>Contact:</strong> {{ currentSupplier.contact_name }}</p>
+                    </div>
+                    
+                    <div class="warning-message">
+                        <p>Cette action est <strong>irréversible</strong> et supprimera définitivement ce fournisseur de la base de données.</p>
+                        <p class="text-danger"><strong>Attention:</strong> La suppression pourrait échouer s'il existe des commandes ou des produits associés à ce fournisseur.</p>
+                    </div>
+                    
+                    <form action="{{ url('supplier', 'manage') }}" method="POST" class="delete-form">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="{{ currentSupplier.ID_Provider }}">
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Supprimer définitivement
+                            </button>
+                            <a href="{{ url('supplier', 'manage') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ BASE_URL }}static/js/provider-notifications.js"></script>
+{% endblock %}

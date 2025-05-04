@@ -8,22 +8,25 @@
     <script type="application/json" id="server-notification">
         {{ notification|json_encode|raw }}
     </script>
-    
-    <div class="section-header">
+
+    <div class="product-container">
+    <div class="product-header">
         <h1>
-            <i class="fas fa-boxes"></i> Gestion des produits,
+            <i class="fas fa-boxes"></i>  Gestion des produits
             {% if lowStockCount > 0 %}
                 <span class="badge badge-warning">{{ lowStockCount }} produit(s) à faible stock</span>
             {% endif %}
         </h1>
         
-        <div class="section-actions">
-            <a href="{{ url('product', 'index') }}" class="btn btn-primary {{ action == 'list' ? 'active' : '' }}">
-                <i class="fas fa-list"></i> Liste des produits
-            </a>
-            <a href="{{ url('product', 'manage', {'action': 'create'}) }}" class="btn btn-success {{ action == 'create' ? 'active' : '' }}">
-                <i class="fas fa-plus"></i> Nouveau produit
-            </a>
+        <div class="product-actions">
+        <a href="{{ url('product', 'index') }}" class="btn btn-primary {{ action == 'list' ? 'active' : '' }}">
+    <i class="fas fa-list"></i> Liste des produits
+</a>
+{% if isManager %}
+<a href="{{ url('product', 'manage', {'action': 'create'}) }}" class="btn btn-success {{ action == 'create' ? 'active' : '' }}">
+    <i class="fas fa-plus"></i> Nouveau produit
+</a>
+{% endif %}
         </div>
     </div>
     
@@ -153,23 +156,23 @@
                                 </div>
                             </td>
                             <td>{{ product.last_delivery|date("d/m/Y") }}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="{{ url('product', 'manage', {'action': 'view', 'id': product.ID_Product}) }}" class="action-btn view" data-tooltip="Voir détails">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    {% if isManager %}
-                                    <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="action-btn edit" data-tooltip="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    {% endif %}
-                                    {% if isAdmin %}
-                                    <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="action-btn delete" data-tooltip="Supprimer">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                    {% endif %}
-                                </div>
-                            </td>
+                                <td>
+                                    <div class="action-buttons">
+    <a href="{{ url('product', 'view', {'id': product.ID_Product}) }}" class="action-btn view">
+        <i class="fas fa-eye"></i><span>Voir</span>
+    </a>
+    {% if isManager %}
+    <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="action-btn edit">
+        <i class="fas fa-edit"></i><span>Modifier</span>
+    </a>
+    {% endif %}
+    {% if isManager %}
+    <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="action-btn delete">
+        <i class="fas fa-trash"></i><span>Supprimer</span>
+    </a>
+    {% endif %}
+</div>
+                                </td>
                         </tr>
                     {% endfor %}
                 {% else %}

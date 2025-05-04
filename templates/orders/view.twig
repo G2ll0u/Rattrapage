@@ -65,29 +65,24 @@
         </div>
         
         <div class="product-detail-footer">
-            <div class="action-buttons">
-                {% if user.role == 'Admin' or user.role == 'Manager' %}
-                <a href="{{ url('product', 'edit', {'id': product.ID_Product}) }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Modifier
-                </a>
-                {% endif %}
-                
-                {% if user.role == 'Admin' %}
-                <a href="{{ url('product', 'delete', {'id': product.ID_Product}) }}" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Supprimer
-                </a>
-                {% endif %}
-                
-                <!-- Ces boutons pourraient être liés à d'autres fonctionnalités -->
-                <a href="#" class="btn btn-success">
-                    <i class="fas fa-plus"></i> Ajuster le stock
-                </a>
-                
-                <a href="#" class="btn btn-info">
-                    <i class="fas fa-history"></i> Historique des mouvements
-                </a>
-            </div>
+        <div class="action-buttons">
+            {% if user_.role == 'Manager' or user_.role == 'Admin' %}
+            <a href="{{ url('product', 'manage', {'action': 'edit', 'id': product.ID_Product}) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            {% endif %}
+            
+            {% if user_.role == 'Admin' %}
+            <a href="{{ url('product', 'manage', {'action': 'delete', 'id': product.ID_Product}) }}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Supprimer
+            </a>
+            {% endif %}
+            
+            <a href="{{ url('product', 'index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
         </div>
+    </div>
     </div>
 </div>
 {% endblock %}
