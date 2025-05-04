@@ -54,14 +54,17 @@ class ProductController extends Controller {
     public function manage() {
         $this->checkAuth();
         
+        $segments = explode('/', $_GET['uri'] ?? '');
+        $pathId = isset($segments[2]) ? intval($segments[2]) : null;
+
         // Récupération des paramètres
         $action = $_GET['action'] ?? 'list';
-        $id = $_GET['id'] ?? null;
+        $id = $_GET['id'] ?? $pathId;
         $search = $_GET['search'] ?? '';
         $category = $_GET['category'] ?? '';
         $sort = $_GET['sort'] ?? 'name';
         $direction = $_GET['direction'] ?? 'asc';
-        
+
         // Initialisation des variables
         $notification = $this->initNotification();
         $currentProduct = null;
@@ -151,7 +154,11 @@ class ProductController extends Controller {
     public function view() {
         $this->checkAuth();
         
-        $id = $_GET['id'] ?? null;
+        $segments = explode('/', $_GET['uri'] ?? '');
+        $pathId = isset($segments[2]) ? intval($segments[2]) : null;
+    
+        
+        $id = $_GET['id'] ?? $pathId; // Use ID from path if not in query string
         
         if (!$id) {
             $this->redirect('product', 'index');
